@@ -9,15 +9,7 @@ var clear = function() {
 	$('#games').html('');
 }
 
-//Makes Get request to a the url specified
-var httpGet = function(theUrl) {
-	var xmlHttp = null;
 
-	xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("GET", theUrl, false);
-	xmlHttp.send(null);
-	return xmlHttp.responseText;
-}
 
 //Renders homepage by making request for all DisplayGames and appending 
 //divs representing them into the #games div
@@ -50,7 +42,7 @@ var render = function() {
 					},
 					function(data) {
 						//Renders the page, using the html served by the server in response to the get request
-						$('body').html(data);
+						return $('body').html(data);
 					});
 			});
 
