@@ -32,6 +32,7 @@ var clear = function() {
 //The dom will make a get request for the desired game and use this
 //to render divs representing the cards in the game
 var render = function(display_id) {
+	console.log('rendering');
 	console.log(display_id);
 	var path = '/game/' + display_id;
 	console.log(path);
@@ -108,6 +109,7 @@ socket.on('game', function(obj){
 	if(obj.verb == 'updated'){
 		console.log('Game was updated. Logging data: ');
 		console.log(obj.data);
+		render(displayId);
 	}
 });
 
@@ -124,7 +126,7 @@ $('#deal').on('click', function(){
 	});
 });
 $('#render').on('click', function() {
-	console.log('rendering:\n');
+	//console.log('rendering:\n');
 	console.log(displayId);
 	render(displayId);
 });

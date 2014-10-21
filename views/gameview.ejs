@@ -1,16 +1,26 @@
 <body>
 GAMEVIEW
 <div id='displayId'><%= displayId %></div>
-<div id='op_hand'></div>
-<div id='op_field'></div>
+<div id='oponent' class='wrap1'></div>
+	<div class='cardwrap' id='op_hand'>
+		<p>Oponent's Hand</p>
+	</div>
+	<div class='cardwrap' id='op_field'>
+		<p>Oponent's Field</p>
+	</div>
 <div id='mid_wrapper'>
 	<div id='deck'></div>
 	<button id='deal'>Deal Hands</button>
 	<div id='scrap'></div>
 </div>
-<div id='your_field'></div>
-<div id='your_hand'></div>
-
+<div id='you' class='wrap1' = >
+	<div class='cardwrap' id='your_field'>
+		<p>Your Field</p>
+	</div>
+	<div class='cardwrap' id='your_hand'>
+		<p>Your Hand</p>
+	</div>
+</div>
 <button id='render'>Render</button>
 
 <script src="/js/localScripts/gameview.js"></script>

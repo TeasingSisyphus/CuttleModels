@@ -7,6 +7,8 @@ PREVIOUS
 
 NEXT:
 -Create render() function in gameview.js that makes get request to the appropriate game and renders the board
+	-Fix Clear function to reflect that various elements of the gameview now have <p> elements that are not to be erased
+	-Implement clear function as first line of render function
 
 THEN:
 
