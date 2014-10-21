@@ -19,3 +19,4 @@ QUALITY OF LIFE:
 -Locally install jquery
 -HANDLE ERROS!!!!
 	-Send badrequest when player attempts to deal before 2 players join
+	-Conditional in render() function (gameview.js) should have an else, but this was causing syntax error

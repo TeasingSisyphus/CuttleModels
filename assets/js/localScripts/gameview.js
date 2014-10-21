@@ -40,8 +40,53 @@ var render = function(display_id) {
 		console.log('Got game response: \n');
 		console.log(res);
 
-		//Render Opponent's hand
+		//First: check if we are player 1:
 
+		//console.log("Logging p1's socketId: ");
+		//console.log(res.players[0].socketId);
+		//console.log("Logging our socket: ");
+		//console.log(socket.socket);
+		//console.log(socket.socket.sessionid);
+		console.log(res.players[0].socketId === socket.socket.sessionid);
+		if(res.players[0].socketId === socket.socket.sessionid) {
+			var player_index = 0;
+			console.log("We are player: " + player_index);
+			var op_index = 1;
+			console.log("They are player: " + op_index);
+		}
+		console.log(res.players[1].socketId === socket.socket.sessionid);
+		//FIX:
+		//This conditional should be an else if, but it was giving me trouble
+		if(res.players[1].socketId === socket.socket.sessionid){
+			var player_index = 1;
+			console.log("We are Player: " + player_index)
+			var op_index = 0;
+			console.log("They are player: " + op_index);
+		}
+
+	//	else{
+	//		console.log("We aren't p1 or p2?!");
+	//	}
+		//Render Opponent's hand
+		for(var i = 0; i < res.players[op_index].hand.length; i++) {
+			//Select card to be rendered
+			var card = res.players[op_index].hand[i];
+			//Append a div into #op_hand representing the card.
+			//It will have an id of #op_hand_INDEX, where INDEX = i
+			//and a class of .card
+			$('#op_hand').append("<div class='card' id='op_hand_" + i + "'>" + card + "</div>");
+		}
+
+		//Render our hand
+		for(var i = 0; i < res.players[player_index].hand.length; i++) {
+			//Select card to be rendered
+			var card = res.players[player_index].hand[i];
+			//Append a div into #op_hand representing the card.
+			//It will have an id of #op_hand_INDEX, where INDEX = i
+			//and a class of .card
+			$('#your_hand').append("<div class='card' id='your_hand_" + i + "'>" + card + "</div>");
+		}		
+		
 
 	});
 }

@@ -17,6 +17,7 @@ module.exports = {
 	//Deals cards to both players in game
 	//Expected params: displayId of game
 	deal: function(req, res) {
+		console.log("Dealing");
 		console.log(req.body);
 		//Finds relevant game and populates it with its players
 		Game.findOne({displayId: req.body.displayId}).populate('players').exec(function(err, foundGame){

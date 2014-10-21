@@ -59,9 +59,9 @@ var render = function() {
 					});
 			});
 
-		} else {
-			console.log('No Games!');
-		}
+		} //else {
+			//console.log('No Games!');
+		//}
 	});
 }
 

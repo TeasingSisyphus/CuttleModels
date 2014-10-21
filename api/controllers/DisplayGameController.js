@@ -53,7 +53,7 @@ module.exports = {
 					Game.subscribe(req.socket, model);
 				}
 			}
-		) //.populate('players');
+		);
 
 	},
 
