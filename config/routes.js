@@ -46,6 +46,10 @@ module.exports.routes = {
 
   '/actiontest': 'DisplayGameController.RenderTest',
 
+  '/joingame': 'DisplayGameController.joinGame',
+
+  //'GET /game': 'GameController.render',
+
   /***************************************************************************
    *                                                                          *
    * Custom routes here...                                                    *

@@ -1,4 +1,11 @@
 var socket = io.connect('http://localhost:1337');
+console.log(socket);
+//socket's id appears to be found as socket.socket.sessionid
+console.log(socket.socket);
+//Though I have access to the same socket.socket as the console,
+//I can't get any of its parameters here (though weirdly, the console can! wut)
+
+
 
 ////////////////////////
 //Function Definitions//
@@ -33,12 +40,25 @@ var render = function() {
 				var req_id = $(this).prop('id');
 				console.log('You clicked game with display id: ' + req_id + '\n');
 
-				//Can't use sockets to render views. ToDo: implement jquery GET Request, instead
-				//httpGet('/gameview');
+
+				//Make request to join game (create player and subscribe to Game instance), passing displayId of game
+				//The sent params can be found on server side as req.body
+				socket.get('/joingame', {
+						displayId: req_id,
+					},
+					function(res) {
+						console.log('Got Response from /joingame request\n');
+						console.log(res);
+					});
 
 				//Make get request to server for the gameview, passing the displayId of the game to be rendered.
 				$.get('/gameview', {
-						displayId: req_id
+						displayId: req_id,
+						//Trying to get access to socket.socket.sessionid
+						//socketId: socket,
+
+						//test param to see why I don't have access to socketId in DisplayGameController.gotoGame
+						//feathers: 'So many'
 					},
 					function(data) {
 						//Renders the page, using the html served by the server in response to the get request
