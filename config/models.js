@@ -10,7 +10,8 @@
  */
 
 module.exports.models = {
-
+  //I'd like to set the migrate status to drop, but idk how atm
+  //sails.config.models.migrate: drop,
   /***************************************************************************
   *                                                                          *
   * Your app's default connection. i.e. the name of one of your app's        *

@@ -50,6 +50,7 @@ module.exports = {
 						console.log("New Player Added:\n");
 						console.log(res);
 					});
+					Game.subscribe(req.socket, model);
 				}
 			}
 		) //.populate('players');

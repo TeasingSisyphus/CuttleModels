@@ -50,6 +50,10 @@ module.exports = {
 			via: 'currentGame'
 		},
 
+		turn: {
+			type: 'integer',
+			defaultsTo: 1
+		},
 
 	},
 	//Turn of automatic generation of primary key (id) for Games, as they will be found via their displayId,

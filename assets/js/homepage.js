@@ -1,11 +1,4 @@
 var socket = io.connect('http://localhost:1337');
-console.log(socket);
-//socket's id appears to be found as socket.socket.sessionid
-console.log(socket.socket);
-//Though I have access to the same socket.socket as the console,
-//I can't get any of its parameters here (though weirdly, the console can! wut)
-
-
 
 ////////////////////////
 //Function Definitions//

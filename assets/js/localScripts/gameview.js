@@ -46,6 +46,26 @@ var render = function(display_id) {
 	});
 }
 
+/////////////////
+//Socket Events//
+/////////////////
+
+//The following code handles model events on Games
+//The type of change made to a Game model will be found
+//under obj.verb 
+socket.on('game', function(obj){
+	console.log('Game event fired. Logging verb: ');
+	console.log(obj.verb);
+
+	//If the event was an update, log the changes
+	//ToDo: Create render function and call it when
+	//game is updated
+	if(obj.verb == 'updated'){
+		console.log('Game was updated. Logging data: ');
+		console.log(obj.data);
+	}
+});
+
 //////////////////////
 //On Click Callbacks//
 //////////////////////
@@ -53,6 +73,11 @@ $('#displayId').on('click', function() {
 	console.log('clicked displayId\n');
 });
 
+$('#deal').on('click', function(){
+	socket.get('/deal', {displayId: displayId}, function(res){
+		console.log(res);
+	});
+});
 $('#render').on('click', function() {
 	console.log('rendering:\n');
 	console.log(displayId);

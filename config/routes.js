@@ -48,6 +48,8 @@ module.exports.routes = {
 
   '/joingame': 'DisplayGameController.joinGame',
 
+  '/deal': 'GameController.deal',
+
   //'GET /game': 'GameController.render',
 
   /***************************************************************************
