@@ -20,5 +20,7 @@ QUALITY OF LIFE:
 -Set migrate status to drop
 -Locally install jquery
 -HANDLE ERROS!!!!
+	-Dealing from player1's client, does not automatically render player2's dom
+		-Player2 recieves game object with no players
 	-Send badrequest when player attempts to deal before 2 players join
 	-Conditional in render() function (gameview.js) should have an else, but this was causing syntax error
