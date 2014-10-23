@@ -50,6 +50,8 @@ module.exports.routes = {
 
   '/deal': 'GameController.deal',
 
+  '/move_card': 'GameController.move_card',
+
   //'GET /game': 'GameController.render',
 
   /***************************************************************************

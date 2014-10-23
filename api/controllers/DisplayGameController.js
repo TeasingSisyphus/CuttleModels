@@ -47,8 +47,8 @@ module.exports = {
 						socketId: req.socket.id,
 						currentGame: model
 					}).exec(function(err, res) {
-						console.log("New Player Added:\n");
-						console.log(res);
+						console.log("New Player Added: " + res.socketId + '\n');
+						//console.log(res);
 					});
 					Game.subscribe(req.socket, model);
 				}

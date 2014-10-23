@@ -31,3 +31,11 @@ body {
 	text-align: center;
 	text-shadow: 2px 2px #CF6870;
 }
+
+#sel_wrap {
+	display: inline-block;
+}
+
+#selector {
+	display: inline-block;
+}

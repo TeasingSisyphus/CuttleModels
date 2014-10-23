@@ -3,13 +3,14 @@
 a [Sails](http://sailsjs.org) application
 
 PREVIOUS
+-Create render() function in gameview.js that makes get request to the appropriate game and renders the board
+	-Implement clear function as first line of render function
+-Fixed Clear function to reflect that various elements of the gameview now have <p> elements that are not to be erased
 -Created method to deal hands.
 
 NEXT:
--Create render() function in gameview.js that makes get request to the appropriate game and renders the board
-	-Fix Clear function to reflect that various elements of the gameview now have <p> elements that are not to be erased
-	-Implement clear function as first line of render function
-
+-Create action for moving a card
+	-update selector.place using regular expressions when a card is clicked (gameview.js)
 THEN:
 
 -Figure out where js/localScripts directory is being put and why gameview.js is accessible

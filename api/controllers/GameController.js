@@ -36,10 +36,10 @@ module.exports = {
 				}
 				//Save changes to the game
 				foundGame.save();
-
+				console.log(foundGame);
 				//Log changes on server
-				console.log(foundGame.players[0]);
-				console.log(foundGame.players[1]);
+				//console.log(foundGame.players[0]);
+				//console.log(foundGame.players[1]);
 
 				//Respond with updated game
 				//ToDo: Change res.send to a publishUpdate
@@ -53,6 +53,57 @@ module.exports = {
 			}		
 		});
 	},
+	//Moves a card in a particular game
+	//Expected params: displayId, player, sel (selector) and dest (destination)
+	move_card: function(req, res){
+		//Find game with displayId and populate it with it's players
+		Game.findOne({displayId: req.body.displayId}).populate('players').exec(function(err, foundGame){
+			console.log(req.body);
+			console.log("Player Number " + req.body.player + " Wants to move. It is turn: " + foundGame.turn);
+			if (err || !foundGame) {
+				//return res.BadRequest('Game Not Found!');
+				console.log("Can't find game!");
+				res.send("Can't find your game. WHAT DID YOU DO?!");
+			}
+			//Only allow move if it is your turn
+			else if(req.body.player === (foundGame.turn % 2) ) {
+				console.log("Correct player wants to move");
+
+				//Fetch the selector and destination from the request
+				var sel = req.body.sel;
+				console.log(sel);
+				var dest = req.body.dest;
+				console.log(dest);
+				//Check if the selected card is in the player's hand
+				if (req.body.sel.place === 'hand') {
+					//Check if the destination is the player's field
+					if(req.body.dest.place === 'field') {
+						//Store the card to be moved
+						var temp = foundGame.players[req.body.player].hand[sel.index];
+						//Switch the desired card with the first card in the hand
+						foundGame.players[req.body.player].hand[sel.index] = foundGame.players[req.body.player].hand[0];
+						foundGame.players[req.body.player].hand[0] = temp;
+
+						//Shift desired card off top of player's hand into their field
+						foundGame.players[req.body.player].field[foundGame.players[req.body.player].field.length] = foundGame.players[req.body.player].hand.shift();
+					}
+				}
+
+				//Incriment the turn
+				foundGame.turn++;
+
+				//After your card has been moved, save changes to the model
+				foundGame.save();
+				//Then publishUpdate to users
+				Game.publishUpdate(req.body.displayId, {game: foundGame});
+
+			}
+			else{
+				res.send("Not your turn!");
+			}
+		});
+	},
+
 	render: function(req, res) {
 		//toDO: Use displayId in req to query for game, then respond with that game as a json object
 		//Finally, use data on client side to render game

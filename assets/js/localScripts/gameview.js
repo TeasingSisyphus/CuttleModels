@@ -1,15 +1,53 @@
 //Acknowledge that script has loaded
 console.log('Loading Gameview.js\n');
+
 //Get displayId of game from dom element rendered with displayId param or response in DisplayGameController.gotoGame
+//ToDo: move this to variable definitions
 var displayId = $('#displayId').html();
 
 console.log('displayId taken from pageload: ' + displayId + '\n');
 
-//////////////////////
-//Object Definitions//
-//////////////////////
+///////////////////////////////
+//Object & Method Definitions//
+///////////////////////////////
+
 //ToDo: Create a selector and selector div
 //Selector will be used to pick a card that will be moved somewhere
+var Selector = function() {
+	//Represents which player's card is selected (in game.players[])
+	//this.player = 0;
+	//Represents where the player's card is ('hand' or 'field')
+	this.place = '';
+	//Represents the index of the selected card within a hand or field
+	this.index = 0;
+	//Represents the str content of the selected card (ie: c5)
+	this.card = ''
+}
+//Method on Selector that clears it
+Selector.prototype.clear = function(){
+	//Clear the object attributes
+	//this.player = 0;
+	this.place = '';
+	this.index = 0;
+	this.card = '';
+	//Clear the dom element representing the selector
+	//ToDo: Make this dom element!
+	$('#selector').html('');
+}
+
+var Destination = function() {
+	//Represents whether the card is moving to a hand, field, scrap or scuttle
+	this.place = '';
+	//If the card is scuttling, represents where the card to be scuttled is found
+	this.scuttle_index = 0;
+}
+
+//Method on Destination that clears it
+Destination.prototype.clear = function(){
+	this.place = '';
+	this.scuttle_index = 0;
+}
+
 
 //ToDo: Create a destination object
 //destination will be used to determine where the selected card will be moved
@@ -55,7 +93,7 @@ var render = function(display_id) {
 	//console.log(path);
 	//Make request for game object which will be used to render game
 	socket.get(path, function(res) {
-		console.log('Got game response: \n');
+		console.log('Got game response:');
 		console.log(res);
 
 		//First: check if we are player 1:
@@ -65,20 +103,22 @@ var render = function(display_id) {
 		//console.log("Logging our socket: ");
 		//console.log(socket.socket);
 		//console.log(socket.socket.sessionid);
-		console.log(res.players[0].socketId === socket.socket.sessionid);
+		//console.log(res.players[0].socketId === socket.socket.sessionid);
 		if (res.players[0].socketId === socket.socket.sessionid) {
 			var player_index = 0;
 			//use local reference to player_index capture player_number outside of render() function
 			player_number = player_index;
-			//console.log("We are player: " + player_index);
+			console.log("We are player: " + player_index);
 			var op_index = 1;
-			console.log("They are player: " + op_index);
+			console.log("They are player: " + op_index +'\n');
 		}
 		//console.log(res.players[1].socketId === socket.socket.sessionid);
 		//FIX:
 		//This conditional should be an else if, but it was giving me trouble
 		if (res.players[1].socketId === socket.socket.sessionid) {
 			var player_index = 1;
+			//use local reference to player_index to capture player_number
+			player_number = player_index
 			console.log("We are Player: " + player_index)
 			var op_index = 0;
 			console.log("They are player: " + op_index);
@@ -95,7 +135,7 @@ var render = function(display_id) {
 			//Append a div into #op_hand representing the card.
 			//It will have an id of #op_hand_INDEX, where INDEX = i
 			//and a class of .card
-			$('#op_hand').append("<div class='card' id='op_hand_" + i + "'>" + card + "</div>");
+			$('#op_hand').append("<div class='op_card card' id='op_hand_" + i + "'>" + " Card " + "</div>");
 		}
 
 		//Render our hand
@@ -105,7 +145,7 @@ var render = function(display_id) {
 			//Append a div into #op_hand representing the card.
 			//It will have an id of #op_hand_INDEX, where INDEX = i
 			//and a class of .card
-			$('#your_hand').append("<div class='card' id='your_hand_" + i + "'>" + card + "</div>");
+			$('#your_hand').append("<div class='your_card card' id='your_hand_" + i + "'>" + card + "</div>");
 		}
 
 		//Render Opponent's field
@@ -115,18 +155,45 @@ var render = function(display_id) {
 			//Append a div into #op_hand representing the card.
 			//It will have an id of #op_hand_INDEX, where INDEX = i
 			//and a class of .card
-			$('#op_hand').append("<div class='card' id='op_field_" + i + "'>" + card + "</div>");
+			$('#op_field').append("<div class='op_card card' id='op_field_" + i + "'>" + card + "</div>");
 		}
 
 		//Render Your field
 		for (var i = 0; i < res.players[player_index].field.length; i++) {
 			//Select card to be rendered
 			var card = res.players[player_index].field[i];
+			console.log("Logging card in our field: " + card);
 			//Append a div into #op_hand representing the card.
 			//It will have an id of #op_hand_INDEX, where INDEX = i
 			//and a class of .card
-			$('#your_hand').append("<div class='card' id='your_field_" + i + "'>" + card + "</div>");
+			$('#your_field').append("<div class='your_card card' id='your_field_" + i + "'>" + card + "</div>");
 		}
+
+		//Clear all onclick event listeners to your_cards
+		$('.your_card').off('click');
+		$('.your_card').on('click', function(){
+			if($(this).html() === sel.card){
+				console.log("Card was already selected: deselecting");
+				sel.clear();
+			} else {
+				//ToDo: update sel.place using regular expression
+				console.log($(this).prop('id'));
+				temp_index = $(this).prop('id');
+				//Temp place will be used to find the place (hand/field) of the selected card
+				//match uses the regex.exec(str) method to create an array of the matching info
+				//The first element of match is the place surrounded by underscores (the info that matched it)
+				//The second element (what we want) is the place, itself
+				var match = /\_([^()]*)\_/.exec(temp_index)
+				var place = match[1];
+				sel.place = place;
+				temp_index = temp_index.replace(/[^\d]/g, '');
+				sel.index = temp_index;
+				//console.log("Selector index: " + sel.index);
+				sel.card = $(this).html();
+				//console.log("Selector card: " + sel.card);
+				$('#selector').html(sel.card);
+			}
+		});
 
 
 	});
@@ -135,7 +202,13 @@ var render = function(display_id) {
 ////////////////////////
 //Variable Definitions//
 ////////////////////////
+
+//Represents whether this user is p1 or p2 in their game
 var player_number = 0;
+//Selector used to determine which card will be moved
+var sel = new Selector();
+//Destination used to determine where a card will be moved
+var dest = new Destination();
 
 /////////////////
 //Socket Events//
@@ -169,6 +242,7 @@ $('#clear').on('click', function() {
 	clear();
 });
 
+//ToDo: Make this a deal function and call it here
 $('#deal').on('click', function() {
 	socket.get('/deal', {
 		displayId: displayId
@@ -181,4 +255,19 @@ $('#render').on('click', function() {
 	//console.log('rendering:\n');
 	console.log(displayId);
 	render(displayId);
+});
+
+//When you click your field, if you've selected a card
+//move the selected card to your field
+$('#your_field').on('click', function(){
+	//Only continue if a card is selected
+	if(sel.card != '') {
+		//ToDo: deal with case where selected card was on field and re-clicked
+		dest.place = 'field';
+		console.log('Making request to move_card');
+		socket.get('/move_card', {displayId: displayId, player: player_number, sel: sel, dest: dest}, function(res){
+			console.log("Got response from request to move_card:");
+			console.log(res);
+		});
+	}
 });
