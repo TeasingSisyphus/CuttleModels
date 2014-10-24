@@ -26,26 +26,28 @@ var Selector = function() {
 //Method on Selector that clears it
 Selector.prototype.clear = function(){
 	//Clear the object attributes
-	//this.player = 0;
+	//console.log("Clearing Selector");
 	this.place = '';
 	this.index = 0;
 	this.card = '';
 	//Clear the dom element representing the selector
-	//ToDo: Make this dom element!
 	$('#selector').html('');
 }
 
 var Destination = function() {
 	//Represents whether the card is moving to a hand, field, scrap or scuttle
 	this.place = '';
+	this.scuttle = false;
 	//If the card is scuttling, represents where the card to be scuttled is found
 	this.scuttle_index = 0;
 }
 
 //Method on Destination that clears it
 Destination.prototype.clear = function(){
+	//console.log("Clearing Destination");
 	this.place = '';
 	this.scuttle_index = 0;
+	this.scuttle = false;
 }
 
 
@@ -96,6 +98,10 @@ var render = function(display_id) {
 		console.log('Got game response:');
 		console.log(res);
 
+		if(res.players.length === 0) {
+			console.log("No Players!");
+		}
+
 		//First: check if we are player 1:
 
 		//console.log("Logging p1's socketId: ");
@@ -104,98 +110,140 @@ var render = function(display_id) {
 		//console.log(socket.socket);
 		//console.log(socket.socket.sessionid);
 		//console.log(res.players[0].socketId === socket.socket.sessionid);
-		if (res.players[0].socketId === socket.socket.sessionid) {
+		else {
+			if (res.players[0].socketId === socket.socket.sessionid) {
 			var player_index = 0;
 			//use local reference to player_index capture player_number outside of render() function
 			player_number = player_index;
 			console.log("We are player: " + player_index);
 			var op_index = 1;
 			console.log("They are player: " + op_index +'\n');
-		}
-		//console.log(res.players[1].socketId === socket.socket.sessionid);
-		//FIX:
-		//This conditional should be an else if, but it was giving me trouble
-		if (res.players[1].socketId === socket.socket.sessionid) {
-			var player_index = 1;
-			//use local reference to player_index to capture player_number
-			player_number = player_index
-			console.log("We are Player: " + player_index)
-			var op_index = 0;
-			console.log("They are player: " + op_index);
-		}
-
-		//	else{
-		//		console.log("We aren't p1 or p2?!");
-		//	}
-
-		//Render Opponent's hand
-		for (var i = 0; i < res.players[op_index].hand.length; i++) {
-			//Select card to be rendered
-			var card = res.players[op_index].hand[i];
-			//Append a div into #op_hand representing the card.
-			//It will have an id of #op_hand_INDEX, where INDEX = i
-			//and a class of .card
-			$('#op_hand').append("<div class='op_card card' id='op_hand_" + i + "'>" + " Card " + "</div>");
-		}
-
-		//Render our hand
-		for (var i = 0; i < res.players[player_index].hand.length; i++) {
-			//Select card to be rendered
-			var card = res.players[player_index].hand[i];
-			//Append a div into #op_hand representing the card.
-			//It will have an id of #op_hand_INDEX, where INDEX = i
-			//and a class of .card
-			$('#your_hand').append("<div class='your_card card' id='your_hand_" + i + "'>" + card + "</div>");
-		}
-
-		//Render Opponent's field
-		for (var i = 0; i < res.players[op_index].field.length; i++) {
-			//Select card to be rendered
-			var card = res.players[op_index].field[i];
-			//Append a div into #op_hand representing the card.
-			//It will have an id of #op_hand_INDEX, where INDEX = i
-			//and a class of .card
-			$('#op_field').append("<div class='op_card card' id='op_field_" + i + "'>" + card + "</div>");
-		}
-
-		//Render Your field
-		for (var i = 0; i < res.players[player_index].field.length; i++) {
-			//Select card to be rendered
-			var card = res.players[player_index].field[i];
-			console.log("Logging card in our field: " + card);
-			//Append a div into #op_hand representing the card.
-			//It will have an id of #op_hand_INDEX, where INDEX = i
-			//and a class of .card
-			$('#your_field').append("<div class='your_card card' id='your_field_" + i + "'>" + card + "</div>");
-		}
-
-		//Clear all onclick event listeners to your_cards
-		$('.your_card').off('click');
-		$('.your_card').on('click', function(){
-			if($(this).html() === sel.card){
-				console.log("Card was already selected: deselecting");
-				sel.clear();
-			} else {
-				//ToDo: update sel.place using regular expression
-				console.log($(this).prop('id'));
-				temp_index = $(this).prop('id');
-				//Temp place will be used to find the place (hand/field) of the selected card
-				//match uses the regex.exec(str) method to create an array of the matching info
-				//The first element of match is the place surrounded by underscores (the info that matched it)
-				//The second element (what we want) is the place, itself
-				var match = /\_([^()]*)\_/.exec(temp_index)
-				var place = match[1];
-				sel.place = place;
-				temp_index = temp_index.replace(/[^\d]/g, '');
-				sel.index = temp_index;
-				//console.log("Selector index: " + sel.index);
-				sel.card = $(this).html();
-				//console.log("Selector card: " + sel.card);
-				$('#selector').html(sel.card);
 			}
-		});
+			//console.log(res.players[1].socketId === socket.socket.sessionid);
+			//FIX:
+			//This conditional should be an else if, but it was giving me trouble
+			else if (res.players[1].socketId === socket.socket.sessionid) {
+				var player_index = 1;
+				//use local reference to player_index to capture player_number
+				player_number = player_index
+				console.log("We are Player: " + player_index)
+				var op_index = 0;
+				console.log("They are player: " + op_index);
+			}
 
+			//Render cards in scrap pile
+			$('#scrap').html("Cards in Scrap: " + res.scrap.length);
 
+			//	else{
+			//		console.log("We aren't p1 or p2?!");
+			//	}
+
+			//Render Opponent's hand
+			for (var i = 0; i < res.players[op_index].hand.length; i++) {
+				//Select card to be rendered
+				var card = res.players[op_index].hand[i];
+				//Append a div into #op_hand representing the card.
+				//It will have an id of #op_hand_INDEX, where INDEX = i
+				//and a class of .card
+				$('#op_hand').append("<div class='op_card card' id='op_hand_" + i + "'>" + " Card " + "</div>");
+			}
+
+			//Render our hand
+			for (var i = 0; i < res.players[player_index].hand.length; i++) {
+				//Select card to be rendered
+				var card = res.players[player_index].hand[i];
+				//Append a div into #op_hand representing the card.
+				//It will have an id of #op_hand_INDEX, where INDEX = i
+				//and a class of .card
+				$('#your_hand').append("<div class='your_card card' id='your_hand_" + i + "'>" + card + "</div>");
+			}
+
+			//Render Opponent's field
+			for (var i = 0; i < res.players[op_index].field.length; i++) {
+				//Select card to be rendered
+				var card = res.players[op_index].field[i];
+				//Append a div into #op_hand representing the card.
+				//It will have an id of #op_hand_INDEX, where INDEX = i
+				//and a class of .card
+				$('#op_field').append("<div class='card op_card op_field' id='op_field_" + i + "'>" + card + "</div>");
+			}
+
+			//Render Your field
+			for (var i = 0; i < res.players[player_index].field.length; i++) {
+				//Select card to be rendered
+				var card = res.players[player_index].field[i];
+				console.log("Logging card in our field: " + card);
+				//Append a div into #op_hand representing the card.
+				//It will have an id of #op_hand_INDEX, where INDEX = i
+				//and a class of .card
+				$('#your_field').append("<div class='your_card card' id='your_field_" + i + "'>" + card + "</div>");
+			}
+
+			//Clear all onclick event listeners to your_cards
+			$('.your_card').off('click');
+			//Clear all onclick event listeners to op_field
+			$('.op_field').off('click');
+
+			//When one of your cards is clicked, select it
+			$('.your_card').on('click', function(){
+				if($(this).html() === sel.card) {
+					console.log("Card was already selected: deselecting");
+					sel.clear();
+				} else {
+					//ToDo: update sel.place using regular expression
+					console.log($(this).prop('id'));
+					temp_index = $(this).prop('id');
+					//Temp place will be used to find the place (hand/field) of the selected card
+					//match uses the regex.exec(str) method to create an array of the matching info
+					//The first element of match is the place surrounded by underscores (the info that matched it)
+					//The second element (what we want) is the place, itself
+					var match = /\_([^()]*)\_/.exec(temp_index);
+					var place = match[1];
+					sel.place = place;
+					temp_index = temp_index.replace(/[^\d]/g, '');
+					sel.index = temp_index;
+					//console.log("Selector index: " + sel.index);
+					sel.card = $(this).html();
+					//console.log("Selector card: " + sel.card);
+					$('#selector').html(sel.card);
+				}
+			});
+
+			//When you click a card on your opponent's field, if a in your hand is selected,
+			//ask server to scuttle the card
+			//Note that this is an event listener when individual cards are clicked, not
+			//the opponent's field, overall
+			$('.op_field').on('click', function() {
+				console.log('clicked ops field');
+				//Only continue if a card is selected
+				if (sel.card != '') {
+					console.log('card selected: ' + sel.card);
+					if(sel.place === 'hand') {
+						var scuttle = confirm('Do you wish to scuttle?');
+						if (scuttle) {
+							dest.scuttle = true;
+							//Set the destination to opponent's field
+							dest.place = 'op_field';
+							//Get the index of the card to be scuttled on opponent's field:
+							//First pull id from div
+							var str = $(this).prop('id');
+							console.log("got str id: " + str);
+							//Then use regex to pull number from id and assign it to dest.scuttle_index
+							str = /\d/.exec(str);
+							str = str[0];
+							//Convert string value of index to an integer
+							//Assign dest.scuttle_index to this value
+							dest.scuttle_index = parseInt(str);
+							console.log(dest.scuttle_index);
+
+							socket.get('/move_card', {displayId: displayId, player: player_number, sel: sel, dest: dest}, function(res){
+								console.log(res);
+							});
+						}
+					}
+				}
+			});			
+		} 
 	});
 }
 
@@ -258,16 +306,21 @@ $('#render').on('click', function() {
 });
 
 //When you click your field, if you've selected a card
-//move the selected card to your field
+// ask server to move the selected card to your field
 $('#your_field').on('click', function(){
 	//Only continue if a card is selected
-	if(sel.card != '') {
+	if (sel.card != '') {
+		if (sel.place === 'hand') {
 		//ToDo: deal with case where selected card was on field and re-clicked
-		dest.place = 'field';
+		dest.place = 'your_field';
 		console.log('Making request to move_card');
 		socket.get('/move_card', {displayId: displayId, player: player_number, sel: sel, dest: dest}, function(res){
-			console.log("Got response from request to move_card:");
+			//console.log("Got response from request to move_card:");
 			console.log(res);
 		});
+		sel.clear();
+		dest.clear();
+		}
 	}
 });
+

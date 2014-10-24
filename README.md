@@ -9,6 +9,9 @@ PREVIOUS
 NEXT:
 -Create action for moving a card
 	-Allow you scuttle
+		-Began scuttle action as a part of move_card
+		-Scuttle will now work if the scuttling card is a higher rank
+		-Need to update it to allow scuttling of same rank with higher suit
 
 
 THEN:
