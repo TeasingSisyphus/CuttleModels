@@ -14,6 +14,57 @@ module.exports = {
 			console.log(newguy);
 		});
 	}, */
+
+	//Draw one card for requesting player if it is their turn (this takes their turn)
+	draw: function(req, res) {
+		console.log("Draw request made");
+		console.log(req.body);
+		//Finds relevant game and populates it with its players
+		Game.findOne({displayId: req.body.displayId}).populate('players').exec(function(err, foundGame){
+			//Send error if game not found
+			if (err || !foundGame) {
+				console.log("Can't find the game!");
+				res.send("Game not found!");
+			//Check if game has 2 players
+			} else if (foundGame.players.length === 2) {
+				//Check which player is making request
+				console.log("Logging socket of request to draw: " + req.socket.id);
+				if (foundGame.players[0].socketId === req.socket.id) {
+					var player = 0;
+					console.log("Player 0 is making request to draw");
+				}
+
+				if (foundGame.players[1].socketId === req.socket.id) {
+					var player = 1;
+					console.log("Player 1 is making request to draw");
+				}
+
+				//Check if it's your turn
+				if (player === (foundGame.turn % 2) ) {
+					console.log("It is the correct player's turn");
+					//Check if you are at the hand limit
+					if (foundGame.players[player].hand.length < 9) {
+						console.log("Player is under the hand limit");
+						//Deal if all is legit
+						//Deal the card
+						foundGame.players[player].hand[foundGame.players[player].hand.length] = foundGame.deck.shift();
+						//Incriment the turn
+						foundGame.turn++;
+						//Save the changes
+						foundGame.save();
+						//Publish the changes
+						Game.publishUpdate(req.body.displayId, {game: foundGame});
+					}
+
+				}
+
+			} else {
+				console.log("Not enough players!");
+				res.send("Not enough players!");
+			}
+		});
+	},
+
 	//Deals cards to both players in game
 	//Expected params: displayId of game
 	deal: function(req, res) {
@@ -55,6 +106,7 @@ module.exports = {
 	},
 	//Moves a card in a particular game
 	//Expected params: displayId, player, sel (selector) and dest (destination)
+	//TODO: Errors for when someone attempts to move a card before there are two players
 	move_card: function(req, res){
 		//Find game with displayId and populate it with it's players
 		Game.findOne({displayId: req.body.displayId}).populate('players').exec(function(err, foundGame){

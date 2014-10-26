@@ -57,6 +57,12 @@ module.exports = {
 			defaultsTo: []
 		},
 
+		//An integer representing the maximum number of cards a player may have in their hand
+		handLimit: {
+			type: 'integer',
+			defaultsTo: 8
+		},
+
 		turn: {
 			type: 'integer',
 			defaultsTo: 0

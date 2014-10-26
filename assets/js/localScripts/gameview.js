@@ -270,8 +270,7 @@ socket.on('game', function(obj) {
 	console.log(obj.verb);
 
 	//If the event was an update, log the changes
-	//ToDo: Create render function and call it when
-	//game is updated
+	//ToDo: Change render function to take a game object param
 	if (obj.verb == 'updated') {
 		console.log('Game was updated. Logging data: ');
 		console.log(obj.data);
@@ -290,7 +289,7 @@ $('#clear').on('click', function() {
 	clear();
 });
 
-//ToDo: Make this a deal function and call it here
+//When the 'Deal Hands' button is clicked, deal to both players and render the game
 $('#deal').on('click', function() {
 	socket.get('/deal', {
 		displayId: displayId
@@ -299,6 +298,16 @@ $('#deal').on('click', function() {
 	});
 });
 
+//When the 'Draw a Card' button is clicked, deal one card to that player
+$('#draw').on('click', function(){
+	socket.get('/draw', {displayId: displayId}, function(res){
+		console.log(res);
+	});
+});
+
+//When the render button is clicked, render the game
+//ToDo: make a get request here for game and pass that to
+//reworked render function (which takes a game as a param)
 $('#render').on('click', function() {
 	//console.log('rendering:\n');
 	console.log(displayId);
