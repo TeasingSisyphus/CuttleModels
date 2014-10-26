@@ -27,12 +27,12 @@ module.exports = {
 			//Check if there are 2 players before dealing
 			} else if(foundGame.players.length == 2) {
 
-				//Deal one extra card to player 1
-				foundGame.players[0].hand[0] = foundGame.deck.shift();
+				//Deal one extra card to player 2 (Person who goes second gets extra card)
+				foundGame.players[1].hand[0] = foundGame.deck.shift();
 				//Then Deal 5 cards to the hands of each player, starting with p2
 				for (var i = 0; i < 5; i++) {
-					foundGame.players[1].hand[i] = foundGame.deck.shift();
-					foundGame.players[0].hand[i+1] = foundGame.deck.shift();
+					foundGame.players[0].hand[i] = foundGame.deck.shift();
+					foundGame.players[1].hand[i+1] = foundGame.deck.shift();
 				}
 				//Save changes to the game
 				foundGame.save();
@@ -124,6 +124,7 @@ module.exports = {
 
 									//Compare rank of card to target
 									if (card_rank > target_rank) {
+										console.log('Scuttling with high rank');
 										//If the scuttle was valid, move both cards into the scrap pile
 
 										//Move card at top of the field to the position of the target (to switch them)
@@ -138,7 +139,29 @@ module.exports = {
 										foundGame.players[req.body.player].hand[sel.index] = foundGame.players[req.body.player].hand[0];
 										foundGame.players[req.body.player].hand[0] = card;
 										foundGame.scrap[foundGame.scrap.length] = foundGame.players[req.body.player].hand.shift();
-									}	
+									}
+
+									var card_suit = card[0];
+									var target_suit = target[0];
+
+									if (card_rank === target_rank && card_suit > target_suit) {
+										console.log('Scuttling with high suit');
+										//If the scuttle was valid, move both cards into the scrap pile
+
+										//Move card at top of the field to the position of the target (to switch them)
+										foundGame.players[(req.body.player + 1) % 2].field[dest.scuttle_index] = foundGame.players[(req.body.player + 1) % 2].field[0];
+										//Place target card at top of field
+										foundGame.players[(req.body.player + 1) % 2].field[0] = target;
+
+										//Scrap target card (shift it off top of field)
+										foundGame.scrap[foundGame.scrap.length] = foundGame.players[(req.body.player + 1) % 2].field.shift();
+
+										//Scrap scuttling card from player's hand
+										foundGame.players[req.body.player].hand[sel.index] = foundGame.players[req.body.player].hand[0];
+										foundGame.players[req.body.player].hand[0] = card;
+										foundGame.scrap[foundGame.scrap.length] = foundGame.players[req.body.player].hand.shift();										
+									}
+
 								} 
 
 							}

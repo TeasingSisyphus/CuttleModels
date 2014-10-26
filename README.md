@@ -3,15 +3,22 @@
 a [Sails](http://sailsjs.org) application
 
 PREVIOUS
+-Began scuttling
 -Update selector.place using regular expressions when a card is clicked (gameview.js)
 
 
 NEXT:
+-Allow player to Draw
+REFACTOR:
+-client-side render function should take a game as a param, not an id
+	-it should not make a get request
 -Create action for moving a card
 	-Allow you scuttle
 		-Began scuttle action as a part of move_card
 		-Scuttle will now work if the scuttling card is a higher rank
 		-Need to update it to allow scuttling of same rank with higher suit
+		-When an invalid scuttle is attempted, don't incriment the turn and send an error
+		
 
 
 THEN:
